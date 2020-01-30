@@ -7,9 +7,7 @@
 import sys
 import argparse
 import yaml
-from virtualcontroller import VirtualXboxController
 from physicalcontroller import PhysicalXboxController
-from PyQt4.QtGui import QApplication
 
 CONFIG_FILE = "../config/robotConfig.yml"
 
@@ -30,17 +28,10 @@ def main():
             "tx_ip": data['core']['ip'],
             "tx_port": data['core']['joystickPort']
         }
-    # print()"Running at %s:%d" % (comms_config["rx_ip"], comms_config["rx_port"]))
-    # print()"Sending to %s:%d" % (comms_config["tx_ip"], comms_config["tx_port"]))
+    print("Receiving at %s:%d" % (comms_config["rx_ip"], comms_config["rx_port"]))
+    print("Transmitting to %s:%d" % (comms_config["tx_ip"], comms_config["tx_port"]))
 
-    # Launch main window
-    if args.controller_type == "virtual":
-        app = QApplication(sys.argv)
-        window = VirtualXboxController(comms_config, args.verbose)
-        window.show()
-        sys.exit(app.exec_())
-    elif args.controller_type == "physical":
-        xbox_controller = PhysicalXboxController(comms_config, args.verbose)
+    xbox_controller = PhysicalXboxController(comms_config, args.verbose)
 
 
 if __name__ == '__main__':

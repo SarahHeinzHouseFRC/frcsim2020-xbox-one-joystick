@@ -2,7 +2,6 @@
 # Copyright (c) 2019 FRC Team 3260
 #
 
-from PyQt4.QtCore import *
 import sys
 import socket
 import time
@@ -20,7 +19,7 @@ class Comms:
 
     def tx(self, msg):
         time.sleep(0.01)
-        self.tx_socket.sendto(bytes(msg), (self.tx_ip, self.tx_port))
+        self.tx_socket.sendto(bytes(msg, encoding='utf8'), (self.tx_ip, self.tx_port))
 
     def rx(self):
         buffer_size = 1024
@@ -45,6 +44,17 @@ class ControllerState:
         self.bumper_left = ButtonState()  # 0 or 1
         self.left_joystick = JoystickState()  # -511 to 512
         self.right_joystick = JoystickState()  # -511 to 512
+
+    def reset(self):
+        self.x = 0
+        self.y = 0
+        self.a = 0
+        self.b = 0
+        self.dpad = 0
+        self.bumper_right = 0
+        self.bumper_left = 0
+        self.left_joystick = 0
+        self.right_joystick = 0
 
     def toJson(self):
         return "{ %05d %05d %05d %05d %01d%01d%01d%01d %01d%01d%01d%01d }" % \
