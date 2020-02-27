@@ -44,6 +44,7 @@ class ControllerState:
         self.bumper_left = ButtonState()  # 0 or 1
         self.left_joystick = JoystickState()  # -511 to 512
         self.right_joystick = JoystickState()  # -511 to 512
+        self.collision = False
 
     def reset(self):
         self.x = 0

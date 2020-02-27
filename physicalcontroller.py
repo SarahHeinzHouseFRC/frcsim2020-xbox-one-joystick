@@ -21,12 +21,16 @@ class CommsThread(Thread):
             tx_msg = self.controller_state.toJson()
             self.comms.tx(tx_msg)
             if self.verbose:
-                print(tx_msg)
+                print("Joystick transmit: " + tx_msg)
 
             # Receive heartbeat
             rx_msg = self.comms.rx()
             if rx_msg is None:
                 print("Disconnected")
+            else:
+                if self.verbose:
+                    print("Joystick received: " + rx_msg.decode("utf-8"))
+                self.controller_state.collision = int(rx_msg[1:7])
 
     def join(self, **kwargs):
         Thread.join(self)
@@ -43,7 +47,7 @@ class PhysicalXboxController:
         print("Controller: Launched")
 
         try:
-            with Xbox360Controller(0, axis_threshold=0.2) as self.controller:
+            with Xbox360Controller(0, axis_threshold=0.0) as self.controller:
                 # Button events
                 self.controller.button_a.when_pressed = self.on_a_button_pressed
                 self.controller.button_b.when_pressed = self.on_b_button_pressed
@@ -52,9 +56,13 @@ class PhysicalXboxController:
                 self.controller.hat.when_moved = self.on_dpad_pressed
 
                 # Left and right joysticks
-                self.controller.axis_threshold = 0.0
                 self.controller.axis_l.when_moved = self.on_left_joystick_moved
                 self.controller.axis_r.when_moved = self.on_right_joystick_moved
+
+                while True:
+                    self.controller.set_rumble(self.controller_state.collision*0.2, self.controller_state.collision*0.2,
+                                               duration=100)
+                    time.sleep(0.1)
 
                 signal.pause()
         except KeyboardInterrupt:
