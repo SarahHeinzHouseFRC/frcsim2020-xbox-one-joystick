@@ -39,6 +39,7 @@ class CommsThread(Thread):
 class PhysicalXboxController:
     def __init__(self, comms_config, verbose):
         self.controller_state = ControllerState()
+        self.joystick_deadband = 25  # Out of 512
 
         # Launch comms thread
         self.comms = CommsThread(comms_config, self.controller_state, verbose)
@@ -92,12 +93,26 @@ class PhysicalXboxController:
             pass
 
     def on_left_joystick_moved(self, axis):
-        self.controller_state.left_joystick.x = axis.x * 512
-        self.controller_state.left_joystick.y = -axis.y * 512
+        x = axis.x * 512
+        y = -axis.y * 512
+        if -self.joystick_deadband < x < self.joystick_deadband:
+            x = 0
+        if -self.joystick_deadband < y < self.joystick_deadband:
+            y = 0
+        self.controller_state.left_joystick.x = x
+        self.controller_state.left_joystick.y = y
+        # print('Axis {0} moved to {1} {2}'.format(axis.name, int(x), int(y)))
 
     def on_right_joystick_moved(self, axis):
-        self.controller_state.right_joystick.x = axis.x * 512
-        self.controller_state.right_joystick.y = -axis.y * 512
+        x = axis.x * 512
+        y = -axis.y * 512
+        if -25 < x < 25:
+            x = 0
+        if -25 < y < 25:
+            y = 0
+        self.controller_state.right_joystick.x = x
+        self.controller_state.right_joystick.y = y
+        # print('Axis {0} moved to {1} {2}'.format(axis.name, int(x), int(y)))
 
     def on_dpad_pressed(self, axis):
         self.controller_state.dpad.right.pressed = axis.x == 1
