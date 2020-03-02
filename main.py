@@ -9,16 +9,17 @@ import argparse
 import yaml
 from physicalcontroller import PhysicalXboxController
 
+DEFAULT_CONFIG = "joystickConfig.yml"
+
 
 def main():
     # Read command line args
     parser = argparse.ArgumentParser()
-    parser.add_argument("config", help="Path to YAML config file")
     parser.add_argument("--verbose", help="increase output verbosity", action="store_true")
     args = parser.parse_args()
 
     # Read config file
-    with open(args.config) as f:
+    with open(DEFAULT_CONFIG) as f:
         data = yaml.load(f)
         comms_config = {
             "rx_ip": "127.0.0.1",
