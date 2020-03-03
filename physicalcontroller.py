@@ -37,7 +37,7 @@ class CommsThread(Thread):
 
 
 class PhysicalXboxController:
-    def __init__(self, comms_config, verbose):
+    def __init__(self, player, usb, comms_config, verbose):
         self.controller_state = ControllerState()
         self.joystick_deadband = 25  # Out of 512
 
@@ -45,10 +45,10 @@ class PhysicalXboxController:
         self.comms = CommsThread(comms_config, self.controller_state, verbose)
         self.comms.daemon = True
         self.comms.start()
-        print("Controller: Launched")
+        print(f"Controller: Launched player {player}")
 
         try:
-            with Xbox360Controller(0, axis_threshold=0.0) as self.controller:
+            with Xbox360Controller(usb, axis_threshold=0.0) as self.controller:
                 # Left and right joysticks
                 self.controller.axis_l.when_moved = self.on_left_joystick_moved
                 self.controller.axis_r.when_moved = self.on_right_joystick_moved
